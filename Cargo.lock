@@ -402,9 +402,9 @@ dependencies = [
 
 [[package]]
 name = "crc32-v2"
-version = "0.0.5"
+version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1f9e02424b355b87f4a99a47551bd8ee4c21df1e1c42df8c01ec313a88d1384e"
+checksum = "a264a51cf38e0e1b8f179a03af9d89a31f5f016177ca951ceec607cfaa6e27e7"
 
 [[package]]
 name = "crc32c"
