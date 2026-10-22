@@ -1,0 +1,21 @@
+Description: Relax bzip2 dependency to allow 0.6
+ binwalk 3.1.0 requires bzip2 ^0.4.4, but Debian only has rust-bzip2 0.6.
+ binwalk uses only bzip2::Decompress and bzip2::Status, whose API is
+ unchanged; the crate builds against bzip2 0.6.1 without source changes and
+ extracts bzip2 data identically to the 0.4.4 build.
+Author: Fukui Daichi <a.dog.will.talk@akane.waseda.jp>
+Forwarded: not-needed
+Applied-Upstream: commit:6a7947a7651bb5665c5d5b7bd5563f9cf77604af
+Last-Update: 2026-10-22
+---
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -44,7 +44,7 @@
+ version = "0.22.1"
+ 
+ [dependencies.bzip2]
+-version = "0.4.4"
++version = ">= 0.4.4, < 0.7"
+ 
+ [dependencies.chrono]
+ version = "0.4.38"

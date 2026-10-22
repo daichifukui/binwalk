@@ -1,0 +1,102 @@
+Description: Make the extract and analyze doctests self-contained
+ The doctests for Binwalk::extract and Binwalk::analyze scan
+ /usr/share/man/man2/accept.2.gz, which only exists when manpages-dev happens
+ to be installed, so they fail in a clean build chroot. Both also use and
+ delete the same /tmp/foobar directory, so they can race with each other when
+ doctests run in parallel.
+ .
+ Generate a small gzip file with flate2 (already a dependency) in a temporary
+ directory unique to each doctest, and point the examples at it. The examples
+ still exercise scanning and extraction as before.
+ .
+ Upstream reworked these doctests after 3.1.0 (commit ec3a7b76196ab9a1bc93260160eab6721801e7ed),
+ but that version reads tests/inputs/gzip.bin, which is not shipped in the
+ crate, so it cannot be used here.
+Author: Fukui Daichi <a.dog.will.talk@akane.waseda.jp>
+Forwarded: not-needed
+Last-Update: 2026-10-22
+---
+--- a/src/binwalk.rs
++++ b/src/binwalk.rs
+@@ -537,13 +537,21 @@
+     /// ```
+     /// # fn main() { #[allow(non_snake_case)] fn _doctest_main_src_binwalk_rs_529_0() -> Result<binwalk::Binwalk, binwalk::BinwalkError> {
+     /// use binwalk::Binwalk;
++    /// # use std::io::Write;
+     ///
+-    /// # std::fs::remove_dir_all("/tmp/foobar");
+-    /// let target_path = "/usr/share/man/man2/accept.2.gz".to_string();
+-    /// let extraction_directory = "/tmp/foobar/extractions".to_string();
++    /// # // Generate a small gzip file in a private directory, so the example does
++    /// # // not depend on files installed on the host or shared with other tests.
++    /// # let work_dir = std::env::temp_dir().join(format!("binwalk-{}-{}", "_doctest_main_src_binwalk_rs_529_0", std::process::id()));
++    /// # std::fs::remove_dir_all(&work_dir).ok();
++    /// # std::fs::create_dir_all(&work_dir).unwrap();
++    /// # let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
++    /// # gzip.write_all(&b"binwalk example data\n".repeat(64)).unwrap();
++    /// # std::fs::write(work_dir.join("example.gz"), gzip.finish().unwrap()).unwrap();
++    /// let target_path = work_dir.join("example.gz").display().to_string();
++    /// let extraction_directory = work_dir.join("extractions").display().to_string();
+     ///
+     /// let binwalker = Binwalk::configure(Some(target_path),
+-    ///                                    Some(extraction_directory),
++    ///                                    Some(extraction_directory.clone()),
+     ///                                    None,
+     ///                                    None,
+     ///                                    None,
+@@ -556,8 +564,12 @@
+     ///
+     /// assert_eq!(scan_results.len(), 1);
+     /// assert_eq!(extraction_results.len(),  1);
+-    /// assert_eq!(std::path::Path::new("/tmp/foobar/extractions/accept.2.gz.extracted/0/decompressed.bin").exists(), true);
+-    /// # std::fs::remove_dir_all("/tmp/foobar");
++    /// assert_eq!(std::path::Path::new(&extraction_directory)
++    ///     .join("example.gz.extracted")
++    ///     .join("0")
++    ///     .join("decompressed.bin")
++    ///     .exists(), true);
++    /// # std::fs::remove_dir_all(&work_dir).ok();
+     /// # Ok(binwalker)
+     /// # } _doctest_main_src_binwalk_rs_529_0(); }
+     /// ```
+@@ -639,13 +651,21 @@
+     /// ```
+     /// # fn main() { #[allow(non_snake_case)] fn _doctest_main_src_binwalk_rs_624_0() -> Result<binwalk::Binwalk, binwalk::BinwalkError> {
+     /// use binwalk::Binwalk;
++    /// # use std::io::Write;
+     ///
+-    /// # std::fs::remove_dir_all("/tmp/foobar");
+-    /// let target_path = "/usr/share/man/man2/accept.2.gz".to_string();
+-    /// let extraction_directory = "/tmp/foobar/extractions".to_string();
++    /// # // Generate a small gzip file in a private directory, so the example does
++    /// # // not depend on files installed on the host or shared with other tests.
++    /// # let work_dir = std::env::temp_dir().join(format!("binwalk-{}-{}", "_doctest_main_src_binwalk_rs_624_0", std::process::id()));
++    /// # std::fs::remove_dir_all(&work_dir).ok();
++    /// # std::fs::create_dir_all(&work_dir).unwrap();
++    /// # let mut gzip = flate2::write::GzEncoder::new(Vec::new(), flate2::Compression::default());
++    /// # gzip.write_all(&b"binwalk example data\n".repeat(64)).unwrap();
++    /// # std::fs::write(work_dir.join("example.gz"), gzip.finish().unwrap()).unwrap();
++    /// let target_path = work_dir.join("example.gz").display().to_string();
++    /// let extraction_directory = work_dir.join("extractions").display().to_string();
+     ///
+     /// let binwalker = Binwalk::configure(Some(target_path),
+-    ///                                    Some(extraction_directory),
++    ///                                    Some(extraction_directory.clone()),
+     ///                                    None,
+     ///                                    None,
+     ///                                    None,
+@@ -655,8 +675,12 @@
+     ///
+     /// assert_eq!(analysis_results.file_map.len(), 1);
+     /// assert_eq!(analysis_results.extractions.len(),  1);
+-    /// assert_eq!(std::path::Path::new("/tmp/foobar/extractions/accept.2.gz.extracted/0/decompressed.bin").exists(), true);
+-    /// # std::fs::remove_dir_all("/tmp/foobar");
++    /// assert_eq!(std::path::Path::new(&extraction_directory)
++    ///     .join("example.gz.extracted")
++    ///     .join("0")
++    ///     .join("decompressed.bin")
++    ///     .exists(), true);
++    /// # std::fs::remove_dir_all(&work_dir).ok();
+     /// # Ok(binwalker)
+     /// # } _doctest_main_src_binwalk_rs_624_0(); }
+     /// ```
