@@ -1,0 +1,14 @@
+overlay = "."
+uploaders = ["Fukui Daichi <a.dog.will.talk@akane.waseda.jp>"]
+# Enable collapse features by default. This reduces the number of packages
+# generated, but enabling it may cause loops. See
+# https://rust-team.pages.debian.net/book/process-single.html#collapsing-features
+# for details.
+collapse_features = true
+# scripts/binwalk-ui is adapted from a CC BY-SA 3.0 answer by Stephane
+# Chazelas on Unix & Linux Stack Exchange
+# (https://unix.stackexchange.com/a/299659), not MIT like the rest of the
+# crate. It is only a developer helper that runs a locally built
+# target/release/binwalk under GNU screen, so nothing in the packaged crate
+# needs it. Excluding it keeps the source MIT-only; see debian/copyright.
+excludes = ["scripts/binwalk-ui"]

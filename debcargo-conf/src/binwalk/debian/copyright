@@ -1,0 +1,62 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: binwalk
+Upstream-Contact: Craig Heffner <heffnercj@gmail.com>
+Source: https://github.com/ReFirmLabs/binwalk
+
+Files: *
+Copyright: 2024 Craig Heffner <heffnercj@gmail.com>
+License: MIT
+Comment:
+ The upstream LICENSE file reads "Copyright (c) 2024 devttys0"; devttys0 is
+ Craig Heffner's GitHub account (same e-mail address in the upstream Git
+ history). Every file in the 3.1.0 crate was written or rewritten in 2024 for
+ the Rust rewrite of binwalk; files that existed in the earlier Python
+ implementation (README.md, Dockerfile, .gitignore, .dockerignore, LICENSE)
+ share no substantive content with their older versions. A few other people
+ contributed small changes upstream under the same license.
+ .
+ images/binwalk_animated.svg is a termtosvg recording of binwalk scanning a
+ firmware image. The "Copyright (C) 1998-2008 Erik Andersen, Rob Landley, Denys
+ Vlasenko and others. Licensed under GPLv2." string in it is part of the
+ displayed scan output (a BusyBox banner found inside the scanned firmware),
+ not a notice that applies to the SVG file. The font is referenced by name only
+ and is not embedded.
+ .
+ scripts/binwalk-ui is excluded from the Debian source (debcargo.toml
+ excludes). It is adapted from a CC BY-SA 3.0 answer by Stephane Chazelas on
+ Unix & Linux Stack Exchange (2016) and is not needed by the packaged crate.
+
+Files: src/extractors/autel.rs
+Copyright: 2024 Craig Heffner <heffnercj@gmail.com>
+License: MIT
+Comment:
+ The Autel firmware de-obfuscation routine is a Rust reimplementation of the
+ algorithm described in
+ https://gist.github.com/sector7-nl/3fc815cd2497817ad461bfbd393294cb (a Python
+ script, which carries no license or copyright notice). The byte lookup table
+ is functional data required to decode the firmware format.
+
+Files: debian/*
+Copyright:
+ 2026 Debian Rust Maintainers <pkg-rust-maintainers@alioth-lists.debian.net>
+ 2026 Fukui Daichi <a.dog.will.talk@akane.waseda.jp>
+License: MIT
+
+License: MIT
+ Permission is hereby granted, free of charge, to any person obtaining a copy
+ of this software and associated documentation files (the "Software"), to deal
+ in the Software without restriction, including without limitation the rights
+ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ copies of the Software, and to permit persons to whom the Software is
+ furnished to do so, subject to the following conditions:
+ .
+ The above copyright notice and this permission notice shall be included in all
+ copies or substantial portions of the Software.
+ .
+ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL THE
+ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ SOFTWARE.
